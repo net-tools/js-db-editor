@@ -5,7 +5,7 @@
 	
 	"type": "library",
 	
-	"requireTODO" : {
+	"require" : {
 		"net-tools/js-grid-editor": "^1.0.0"
     },
 	
