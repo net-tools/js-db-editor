@@ -23,6 +23,7 @@ nettools.SQLTableEditor = class {
 	 *   - onSetupGridColumns : function(object[] columns) ; a callback to update default columns definitions automatically set by 'describe' method, if required
 	 *   - defaultValues : object ; an object litteral containing default values for new lines
 	 *   - noPrimaryKeyEdit : bool ; if set to `true`, primary key columns can't be updated (except when creating a new line)
+	 *   - orderBy : string ; optional SQL statement to order rows
      *   - gridEditorClass : function ; constructor of editor class object to use as underlying editor
      *   - gridEditorClassOptions : object ; options object litteral for underlying editor class constructor
 	 *
@@ -255,9 +256,11 @@ nettools.SQLTableEditor = class {
 	 */
 	getData()
 	{
-		// get a list of primary key column names (usually a PK is a single column, but this is not mandatory)
-		var pk = this.getPrimaryKeys();
-		return this.SQLSelect(`SELECT * FROM ${this.tableName} ORDER BY ${pk.join(',')}`);
+		// user options.orderBy clause or get a list of primary key column names (usually a PK is a single column, but this is not mandatory)
+		var order = this.options.orderBy ? this.options.orderBy : this.getPrimaryKeys().join(',');
+
+		// perform query to get data
+		return this.SQLSelect(`SELECT * FROM ${this.tableName} ORDER BY ${order}`);
 	}
 	
 	
