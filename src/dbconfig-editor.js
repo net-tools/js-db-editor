@@ -652,7 +652,7 @@ nettools.DbConfigEditor = class {
 	getListboxes()
 	{
 		// now look for metadata columns
-		return this.sqlEditor.SQLSelect(`SELECT * FROM ${this.table} WHERE ${this.options.metadataColumn} LIKE "%""list""%"`);
+		return this.sqlEditor.SQLSelect(`SELECT ${this.options.primaryKeyColumn}, ${this.options.metadataColumn}, ${this.options.valueColumn} FROM ${this.table} WHERE ${this.options.metadataColumn} LIKE "%""list""%" ORDER BY ${this.options.primaryKeyColumn}`);
 	}
     
     
