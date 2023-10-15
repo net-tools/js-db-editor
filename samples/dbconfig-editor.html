@@ -1,0 +1,137 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Db-config-editor test</title>
+	
+<script src="../../js-core/src/js-core.js"></script>
+<script src="../../ui/src/ui.js"></script>
+<script src="../../ui/src/ui.desktop.js"></script>
+<script src="../../js-grid-editor/src/editor.js"></script>
+<script src="../../js-db-editor/src/db-editor.js"></script>
+<script src="../../../tinymce/tinymce/tinymce.min.js"></script>
+<script src="../src/dbconfig-editor.js"></script>
+<script src="sample.js"></script>
+<link rel="stylesheet" href="sample.css">
+<link rel="stylesheet" href="../../ui/src/ui.css">
+<link rel="stylesheet" href="../../ui/src/ui.yellow-theme.css" id="colorStyle">
+<link rel="stylesheet" href="../../ui/src/ui.desktop.css">
+<link rel="stylesheet" href="../../ui/src/ui.desktop.yellow-theme.css" id="desktopColorStyle">
+<link rel="stylesheet" href="../../js-grid-editor/src/editor.css">
+<link rel="stylesheet" href="../../js-grid-editor/src/theme-neutral.css" id="gridEditorColorStyle">
+<link rel="stylesheet" href="../../js-db-editor/src/db-editor.css">
+<link rel="stylesheet" href="../src/dbconfig-editor.css">
+
+	
+<script>
+var test = {
+	
+	dumpObject : function(o)
+	{
+		if ( o == null )
+			return 'null';
+
+		var ret = [];
+		for ( var p in o )
+			ret.push(p + ':' + o[p]);
+
+		return ret.join('\n');
+	},
+        
+        
+        
+	dbDump : function()
+	{
+		sample.output(JSON.stringify(grid.sqlEditor.db.exec('SELECT * FROM Config'), null, '   '));
+	}
+	
+}
+</script>
+
+<script src="sql-wasm.js"></script>
+</head>
+
+<body>
+<h1>JS db-config editor test</h1>
+<hr>
+
+Color theme : <select onChange="sample.colorChange(this);" id="colorSelect">
+</select>
+-
+Dark theme : <select name="darkTheme" onChange="sample.darkTheme(this);" id="darkThemeSelect">
+	<option selected value="0">No</option>
+	<option value="1">Yes</option>
+</select>
+
+<hr>
+<div id="output"></div>
+
+<a href="javascript:void(0)" onclick="test.dbDump(); return false;">Dump database</a>
+<hr>	
+<div id="table"></div>
+	
+<script>
+var grid;
+	
+	
+// The `initSqlJs` function is globally provided by all of the main dist files if loaded in the browser.
+// We must specify this locateFile function if we are loading a wasm file from anywhere other than the current html page's folder.
+initSqlJs().then(function(SQL){
+	
+	//Create the database
+	const db = new SQL.Database();
+	// Run a query without reading the results
+	db.run("CREATE TABLE Config (id TEXT PRIMARY KEY, namespace TEXT, metadata TEXT, value TEXT);");
+	// Insert two rows
+	db.run("INSERT INTO Config VALUES (?,?,?,?), (?,?,?,?), (?,?,?,?), (?,?,?,?), (?,?,?,?), (?,?,?,?), (?,?,?,?), (?,?,?,?), (?,?,?,?), (?,?,?,?)", 
+                    [
+                        'config.int','namespace.test','{"type":"numeric", "required":1, "hint":"Numeric value"}','1234',
+                        'config2.text','namespace.test','{"type":"text", "required":0}','textvalue',
+                        'config3.bool','namespace.test','{"type":"bool", "required":1, "hint":"Bool value here"}','1',
+                        'config4.bool','namespace.test','{"type":"bool", "required":1}','0',
+                        'config5.list','namespace.test','{"type":"list", "required":1, "separator":";", "list":"config5-data"}','',
+                        'config5-data','namespace.test','{"type":"text", "required":1 }','value1;value2;value3',
+                        'config6.values','namespace.test','{"type":"list", "required":1, "separator":",", "values":"val1,val2,val3"}','',
+                        'config7.longtext','namespace.test','{"type":"longtext", "required":0}','ab\ncd\nef\ngh',
+                        'config8.html','namespace.test','{"type":"html", "required":0}','<b>This is bold</b>',
+                        'config9.longtext','namespace.test','{"type":"longtext", "required":0}','Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum'
+                    ]);
+
+	
+    grid = new nettools.DbConfigEditor(
+            // table config
+            'Config',
+        
+            // node
+            document.getElementById('table'),
+        
+            // options
+            {
+                metadataColumn : 'metadata',
+                valueColumn : 'value',
+                primaryKeyColumn : 'id'
+            },
+                
+            // SQLTableEditor class
+            nettools.SqlLiteTableEditor.bind(null, db),
+        
+            // SQLTableEditor options
+            {
+            }
+        );
+
+    
+    grid.setup()
+		.then(function(){
+        
+    	})
+		.catch(function(e){
+			alert(e.message ? e.message : e);
+		});
+});
+	
+	
+	
+</script>    
+</body>
+</html>

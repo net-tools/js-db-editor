@@ -1,0 +1,186 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Pdo-editor test</title>
+	
+<script src="../../js-core/src/js-core.js"></script>
+<script src="../../js-grid-editor/src/editor.js"></script>
+<script src="../src/db-editor.js"></script>
+<script src="sample.js"></script>
+<link rel="stylesheet" href="sample.css">
+<link rel="stylesheet" href="../../ui/src/ui.css">
+<link rel="stylesheet" href="../../ui/src/ui.yellow-theme.css" id="colorStyle">
+<link rel="stylesheet" href="../../js-grid-editor/src/editor.css">
+<link rel="stylesheet" href="../../js-grid-editor/src/theme-neutral.css" id="gridEditorColorStyle">
+
+	
+<script>
+	
+	
+class MysqlInterface extends nettools.PdoServerInterface 
+{
+	
+	constructor(db, user, password)
+	{
+        super();
+        
+		this.db = db;
+		this.user = user;
+		this.password = password;
+	}
+	
+	
+    
+	/**
+	 * Send a SQL query described in payload object litteral
+	 *
+	 * @param object payload
+	 * @param bool expectResult
+	 * @return Promise Returns a promise resolved if query OK ; if payload.noResponseBody=false, the Promise is resolved with SELECT response
+	 */
+	send(payload)
+	{
+		payload.db = this.db;
+		payload.user = this.user;
+		payload.password = this.password;
+		
+		return new Promise(function(resolve, reject){
+			
+			nettools.jscore.RequestHelper.sendXmlHTTPRequestPromise('pdo-server.php', payload)
+				.then(function(r)
+					{
+						resolve(r.responseBody);
+					})
+				.catch(reject);
+		});
+	}
+
+}
+	
+	
+	
+	
+var grid;
+var intf;
+	
+	
+	
+var test = {
+	
+	dumpObject : function(o)
+	{
+		if ( o == null )
+			return 'null';
+
+		var ret = [];
+		for ( var p in o )
+			ret.push(p + ':' + o[p]);
+
+		return ret.join('\n');
+	},
+        
+        
+        
+	dbDump : function()
+	{
+		intf.select('SELECT * FROM Product', [])
+			.then(function(rows){
+				sample.output(JSON.stringify(rows, null, '   '));
+			});		
+	},
+	
+	
+	
+	onload: function()
+	{
+		document.fDb.db.value = localStorage.getItem('nettools.jsTableEditor.pdo.db');
+		document.fDb.user.value = localStorage.getItem('nettools.jsTableEditor.pdo.user');
+		document.fDb.password.value = localStorage.getItem('nettools.jsTableEditor.pdo.password');
+	},
+	
+	
+	
+	showTable : function()
+	{
+		var db = document.fDb.db.value;
+		var user = document.fDb.user.value;
+		var password = document.fDb.password.value;
+		
+		if ( !db )
+			return;
+		if ( !user )
+			return;
+		if ( !password )
+			return;
+		
+		localStorage.setItem('nettools.jsTableEditor.pdo.db', db);
+		localStorage.setItem('nettools.jsTableEditor.pdo.user', user);
+		localStorage.setItem('nettools.jsTableEditor.pdo.password', password);
+
+		
+		
+		
+		intf = new MysqlInterface(db, user, password);
+
+
+		grid = new nettools.MysqlPdoTableEditor(
+
+				// database link
+				intf,
+
+				// node
+				document.getElementById('table'),
+
+				// table name
+				'Product'
+			);
+
+		grid.setup()
+			.then(function(){ })
+			.catch(function(e){
+				alert(e.message ? e.message : e);
+			});
+		
+		
+		return false;
+	}
+	
+}
+
+</script>
+</head>
+
+<body onload="test.onload()">
+<h1>Pdo table editor test</h1>
+<hr>
+
+Color theme : <select onChange="sample.colorChange(this);" id="colorSelect">
+</select>
+-
+Dark theme : <select name="darkTheme" onChange="sample.darkTheme(this);" id="darkThemeSelect">
+	<option selected value="0">No</option>
+	<option value="1">Yes</option>
+</select>
+
+<hr>
+<div id="output"></div>
+
+<form class="uiForm" name="fDb" onsubmit="return test.showTable();">
+	<label>Db : <input type="text" name="db"></label>
+	<label>- User : <input type="text" name="user"></label>
+	<label>- Password : <input type="text" name="password"></label>
+	
+	<input type="submit" value="Show table">
+</form>
+	
+
+<a href="javascript:void(0)" onclick="test.dbDump(); return false;">Dump database</a>
+
+<hr>	
+
+<div id="table"></div>
+   
+	
+</body>
+</html>

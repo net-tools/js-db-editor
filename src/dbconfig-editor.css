@@ -1,0 +1,62 @@
+
+div.jsDbConfigEditor table.jsGridEditor td.metadata {
+	text-align: center;
+}
+
+div.jsDbConfigEditor table.jsGridEditor td.metadata img {
+	border-bottom: 2px solid transparent;
+	cursor: pointer;
+}
+
+div.jsDbConfigEditor table.jsGridEditor td.metadata img.required {
+	border-bottom-color: red;
+}
+
+
+div.jsDbConfigEditor table.jsGridEditor td span.bool1 {
+    color:green;
+}
+
+
+div.jsDbConfigEditor table.jsGridEditor td span.bool0 {
+    color:red;
+}
+
+div.jsDbConfigEditor table.jsGridEditor td abbr {			/* abbreviated value */
+	color: white;
+    margin-left: 0.3em;
+    background-color: gray;
+    padding: 0.2em;
+}
+
+div.jsDbConfigEditor table.jsGridEditor td em {				/* dirty flag */
+	color: black;
+    padding: 0.2em 0.25em;
+    background-color: orange;
+    margin-left: 1em;
+}
+
+
+.dbConfigMetadata input[name='separator'] 	{ width:2em; }
+.dbConfigMetadata input[name='list'] 		{ width:15em; }
+.dbConfigMetadata input[name='hint'] 		{ width:33em; }
+.dbConfigMetadata textarea 			 		{ width:40em; height: 5em; }
+
+
+div.jsDbConfigEditor div.dbConfig{
+	display: flex;
+    flex-wrap: wrap;	
+    border-bottom: 1px dotted darkgray;
+    margin-bottom: 0.75em;
+}
+
+div.jsDbConfigEditor div.dbConfig > * {
+	margin-top: 0.75em;
+	margin-bottom: 0.75em;
+	margin-left:0;
+	margin-right: 0.4em;
+}
+
+div.jsDbConfigEditor div.dbConfig > label {
+	margin-right: 1.4em;
+}

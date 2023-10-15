@@ -1,0 +1,23 @@
+body {
+    font-family: Gotham, "Helvetica Neue", Helvetica, Arial, "sans-serif";
+    color:black;
+}
+
+
+div#output {
+    background-color: gainsboro;
+    border: 1px solid gray;
+    font-family: Consolas, "Andale Mono", "Lucida Console", "Lucida Sans Typewriter", Monaco, "Courier New", "monospace";
+    min-height: 1.5em;
+    margin:1em 0;
+    padding:0.2em 0.5em;
+    white-space: pre-wrap;
+	color:black;
+}
+
+
+@media screen and (max-width:1024px) {
+    body {
+        font-size:12px;
+    }
+}

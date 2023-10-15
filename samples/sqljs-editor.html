@@ -1,0 +1,121 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>SqlJs-editor test</title>
+	
+<script src="../../js-core/src/js-core.js"></script>
+<script src="../../js-grid-editor/src/editor.js"></script>
+<script src="../src/db-editor.js"></script>
+<script src="sample.js"></script>
+<link rel="stylesheet" href="sample.css">
+<link rel="stylesheet" href="../../ui/src/ui.css">
+<link rel="stylesheet" href="../../ui/src/ui.yellow-theme.css" id="colorStyle">
+<link rel="stylesheet" href="../../js-grid-editor/src/editor.css">
+<link rel="stylesheet" href="../../js-grid-editor/src/theme-neutral.css" id="gridEditorColorStyle">
+
+	
+<script>
+var test = {
+	
+	dumpObject : function(o)
+	{
+		if ( o == null )
+			return 'null';
+
+		var ret = [];
+		for ( var p in o )
+			ret.push(p + ':' + o[p]);
+
+		return ret.join('\n');
+	},
+        
+        
+        
+	dbDump : function()
+	{
+		sample.output(JSON.stringify(grid.db.exec('SELECT * FROM Product'), null, '   '));
+	}
+	
+}
+</script>
+
+<script src="sql-wasm.js"></script>
+</head>
+
+<body>
+<h1>JS table editor test</h1>
+<hr>
+
+Color theme : <select onChange="sample.colorChange(this);" id="colorSelect">
+</select>
+-
+Dark theme : <select name="darkTheme" onChange="sample.darkTheme(this);" id="darkThemeSelect">
+	<option selected value="0">No</option>
+	<option value="1">Yes</option>
+</select>
+
+<hr>
+<div id="output"></div>
+
+<a href="javascript:void(0)" onclick="test.dbDump(); return false;">Dump database</a>
+<hr>	
+<div id="table"></div>
+	
+<script>
+var grid;
+	
+	
+// The `initSqlJs` function is globally provided by all of the main dist files if loaded in the browser.
+// We must specify this locateFile function if we are loading a wasm file from anywhere other than the current html page's folder.
+initSqlJs().then(function(SQL){
+	
+	//Create the database
+	const db = new SQL.Database();
+	// Run a query without reading the results
+	db.run("CREATE TABLE Product (id INTEGER PRIMARY KEY, name TEXT, price REAL);");
+	// Insert two rows
+	db.run("INSERT INTO Product VALUES (?,?,?), (?,?,?)", [1,'desktop monitor',129.99,2,'desktop computer', 599]);
+
+	
+	grid = new nettools.SqlLiteTableEditor(
+
+			// database of type SQL.Database
+			db,
+
+			// node
+			document.getElementById('table'),
+
+			// table name
+			'Product',
+		
+			// options
+			{
+				onAllowDelete : function(rowNumber, row)
+					{
+						if ( rowNumber % 2 == 0 )
+							return Promise.resolve();
+						else
+							return Promise.reject();
+					},
+				
+				
+				onSetupGridColumns : function(columns)
+					{
+						/*columns[0].readonly = true;*/
+					}
+			}
+		);
+	
+	grid.setup()
+		.then(function(){ return;alert('loaded !'); })
+		.catch(function(e){
+			alert(e.message ? e.message : e);
+		});	
+});
+	
+	
+	
+</script>    
+</body>
+</html>

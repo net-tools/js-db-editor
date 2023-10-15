@@ -1,0 +1,6 @@
+# GESTION DU CODAGE
+<IfModule mod_headers.c>
+	<FilesMatch "\.wasm$">
+	Header set Content-Type "application/wasm"
+	</FilesMatch>
+</IfModule>

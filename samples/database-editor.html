@@ -1,0 +1,103 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>SqlJs-editor test</title>
+	
+<script src="../../js-core/src/js-core.js"></script>
+<script src="../../js-grid-editor/src/editor.js"></script>
+<script src="../src/db-editor.js"></script>
+<script src="sample.js"></script>
+<link rel="stylesheet" href="sample.css">
+<link rel="stylesheet" href="../../ui/src/ui.css">
+<link rel="stylesheet" href="../../ui/src/ui.yellow-theme.css" id="colorStyle">
+<link rel="stylesheet" href="../../js-grid-editor/src/editor.css">
+<link rel="stylesheet" href="../../js-grid-editor/src/theme-neutral.css" id="gridEditorColorStyle">
+<link rel="stylesheet" href="../src/db-editor.css">
+
+	
+<script>
+var test = {
+	
+	dumpObject : function(o)
+	{
+		if ( o == null )
+			return 'null';
+
+		var ret = [];
+		for ( var p in o )
+			ret.push(p + ':' + o[p]);
+
+		return ret.join('\n');
+	},
+        
+        
+        
+	dbDump : function()
+	{
+		txt = JSON.stringify(db.exec('SELECT * FROM Product'), null, '   ');
+		txt += '\n\n------\n\n' + JSON.stringify(db.exec('SELECT * FROM Color'), null, '   ');
+		sample.output(txt);
+	}
+	
+}
+</script>
+
+<script src="sql-wasm.js"></script>
+</head>
+	
+
+<body>
+<h1>JS database editor test</h1>
+<hr>
+
+Color theme : <select onChange="sample.colorChange(this);" id="colorSelect">
+</select>
+-
+Dark theme : <select name="darkTheme" onChange="sample.darkTheme(this);" id="darkThemeSelect">
+	<option selected value="0">No</option>
+	<option value="1">Yes</option>
+</select>
+
+<hr>
+<div id="output"></div>
+
+<a href="javascript:void(0)" onclick="test.dbDump(); return false;">Dump database</a>
+<hr>	
+<div id="dbeditor"></div>
+	
+<script>
+var dbeditor;
+var db;
+	
+	
+// The `initSqlJs` function is globally provided by all of the main dist files if loaded in the browser.
+// We must specify this locateFile function if we are loading a wasm file from anywhere other than the current html page's folder.
+initSqlJs().then(function(SQL){
+	
+	//Create the database
+	db = new SQL.Database();
+
+	db.run("CREATE TABLE Product (id INTEGER PRIMARY KEY, name TEXT, price REAL);");
+	db.run("INSERT INTO Product VALUES (?,?,?), (?,?,?)", [1,'desktop monitor',129.99,2,'desktop computer', 599]);
+	
+	db.run("CREATE TABLE Color (id INTEGER PRIMARY KEY, name TEXT);");
+	db.run("INSERT INTO Color VALUES (?,?), (?,?), (?,?)", [1,'blue',2,'red',3,'green']);
+	
+	dbeditor = new nettools.DatabaseEditor(
+		
+			['Product', 'Color'],
+
+			// node
+			document.getElementById('dbeditor'),
+		
+			// database of type SQL.Database
+			nettools.SqlLiteTableEditor.bind(null, db)
+		);	
+});
+	
+	
+	
+</script>    
+</body>
+</html>
