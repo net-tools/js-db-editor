@@ -367,16 +367,7 @@ nettools.DbConfigEditor = class {
 				img.classList.add('required');
 		}
 
-/*
-	METADATA_VALUE_TYPE : 'Value type',
-	METADATA_REQUIRED : 'Required',
-	METADATA_REQUIRED_YES : 'Yes',
-	METADATA_REQUIRED_NO : 'No',
-	METADATA_HINT : 'Tooltip hint',
-	METADATA_LIST : 'Values in row w/ key',
-	METADATA_VALUES : 'List of values',
-	METADATA_SEPARATOR : 'Values separator char.',
-*/
+
 		// set hint 
 		td.title = 	[
 						`${nettools.DbConfigEditor.i18n.METADATA_VALUE_TYPE} : ${m.type}`, 
