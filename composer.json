@@ -6,7 +6,8 @@
 	"type": "library",
 	
 	"require" : {
-		"net-tools/js-grid-editor": "^1.0.0"
+		"net-tools/js-grid-editor": "^1.0.0",
+		"net-tools/ui": "^1.0.0"
     },
 	
 	"autoload": {
