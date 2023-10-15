@@ -367,15 +367,24 @@ nettools.DbConfigEditor = class {
 				img.classList.add('required');
 		}
 
-
+/*
+	METADATA_VALUE_TYPE : 'Value type',
+	METADATA_REQUIRED : 'Required',
+	METADATA_REQUIRED_YES : 'Yes',
+	METADATA_REQUIRED_NO : 'No',
+	METADATA_HINT : 'Tooltip hint',
+	METADATA_LIST : 'Values in row w/ key',
+	METADATA_VALUES : 'List of values',
+	METADATA_SEPARATOR : 'Values separator char.',
+*/
 		// set hint 
 		td.title = 	[
-						`Type : ${m.type}`, 
-						`Required : ${m.required ? 'yes':'no'}`,
-						m.separator ? `Separator : '${m.separator}'` : null,
-						m.list ? `List target : '${m.list}'` : null,
-						m.values ? 'Values list : (...)' : null, 
-						m.hint ? `Hint : ${m.hint}` : null
+						`${nettools.DbConfigEditor.i18n.METADATA_VALUE_TYPE} : ${m.type}`, 
+						`${nettools.DbConfigEditor.i18n.METADATA_REQUIRED} : ${m.required ? nettools.DbConfigEditor.i18n.METADATA_REQUIRED_YES:nettools.DbConfigEditor.i18n.METADATA_REQUIRED_NO}`,
+						m.separator ? `${nettools.DbConfigEditor.i18n.METADATA_SEPARATOR} : '${m.separator}'` : null,
+						m.list ? `${nettools.DbConfigEditor.i18n.METADATA_LIST} : '${m.list}'` : null,
+						m.values ? `${nettools.DbConfigEditor.i18n.METADATA_VALUES} : (...)` : null, 
+						m.hint ? `${nettools.DbConfigEditor.i18n.METADATA_HINT} : ${m.hint}` : null
 					].filter(x => x).join('\n');			// removing empty array values before joining
 	}
 	
@@ -855,7 +864,7 @@ nettools.DbConfigEditor.i18n = {
 	METADATA_HINT : 'Tooltip hint',
 	METADATA_LIST : 'Values in row w/ key',
 	METADATA_VALUES : 'List of values',
-	METADATA_SEPARATOR : 'Separator character for values',
+	METADATA_SEPARATOR : 'Values separator char.',
 	
 	METADATA_SUBMIT_LIST : 'If value type = `list`, `Values in row` or `List of values` data must be set',
 	METADATA_SUBMIT_SEPARATOR : 'Separator character is required if value type = `list`'
