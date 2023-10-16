@@ -215,7 +215,11 @@ nettools.DbConfigEditor = class {
 						if ( elements.separator.value == '' )
 							return Promise.reject({ status:false, message:nettools.DbConfigEditor.i18n.METADATA_SUBMIT_SEPARATOR, field:elements.separator});
 					}
+					else
+						// separator is ignored if type is not list
+						elements.separator.value = '';
 					
+										
 					
 					return Promise.resolve({status:true});
 				},
