@@ -21,7 +21,6 @@ nettools.SQLTableEditor = class {
 	 * `options` parameter may define the following settings :
 	 *   - onAllowDelete : function(string tableName, int rowNumber, object row):Promise ; a callback that returns a resolved Promise if row deletion is allowed, or a rejected Promise if row deletion is denied
 	 *   - onSetupGridColumns : function(object[] columns) ; a callback to update default columns definitions automatically set by 'describe' method, if required
-	 *   - defaultValues : object ; an object litteral containing default values for new lines
 	 *   - noPrimaryKeyEdit : bool ; if set to `true`, primary key columns can't be updated (except when creating a new line)
 	 *   - orderBy : string ; optional SQL statement to order rows
      *   - gridEditorClass : function ; constructor of editor class object to use as underlying editor
@@ -105,8 +104,6 @@ nettools.SQLTableEditor = class {
 					editable : true,
 					rowToStringColumns : 'first',
 					columns : that.fireOnSetupGridColumns(cols),
-					defaultValues : that.options.defaultValues,
-					dialog : that.options.dialog,
 					onRowInsert : that.onInsert.bind(that),
 					onRowDelete : that.onDelete.bind(that),
 					onRowChange : that.onChange.bind(that)
