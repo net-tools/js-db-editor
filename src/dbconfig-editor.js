@@ -30,6 +30,7 @@ nettools.DbConfigEditor = class {
 	 *   - defaultSeparator : string ; set the default separator for list of values (by default, this is set to ';')
 	 *   - lineLength : int ; the maximum allowed characters when displaying value. If the value exceeds `linelength`, it's truncated only for display
 	 *   - dialogObject : object ; a reference to nettools.ui.desktop.dialog (may be used inside an iframe to display the dialog OUTSIDE the iframe by setting this property to parent.nettools.ui.desktop.dialog, for example)
+	 *   - requiredColumns : string[] ; an array of column names for mandatory columns, other that primary key and value column (value column required value which is enforced by 'metadata.required')
 	 *
 	 * `metadata` column value is a JSON encoded object with the properties below :
 	 *   - type : string ; value type (text, numeric, bool, list, longtext, html)
@@ -103,6 +104,7 @@ nettools.DbConfigEditor = class {
 		this.options.defaultSeparator = this.options.defaultSeparator || ';';
 		this.options.dialogObject = this.options.dialogObject || nettools.ui.desktop.dialog;
 		this.options.lineLength = this.options.lineLength || 75;
+		this.options.requiredColumns = this.options.requiredColumns || [];
 	}   
 	
 	
@@ -670,7 +672,7 @@ nettools.DbConfigEditor = class {
 		
 				
 		rows.forEach(function(row){
-			// add a Promise to array
+			// add a Promise to array ; each Promise is resolved by an array of arguments for `outputListbox` function
 			pr.push(new Promise(function(resolve, reject){
 				// transform json-encoded string to object
 				var m = JSON.parse(row[that.options.metadataColumn]);
@@ -680,7 +682,7 @@ nettools.DbConfigEditor = class {
 					reject(new Error(`Unreadable metadata for row with key '${row[that.options.primaryKeyColumn]}'`));
 
 				if ( m.type != 'list' )
-					resolve();
+					resolve(null);
 
 
 				// get separator
@@ -688,7 +690,7 @@ nettools.DbConfigEditor = class {
 
 				// get values as a list
 				if ( m.values )
-					return that.outputListbox(m.values.split(s), row[that.options.primaryKeyColumn], m.hint || '', m.required, row[that.options.valueColumn]);
+					resolve([m.values.split(s), row[that.options.primaryKeyColumn], m.hint || '', m.required, row[that.options.valueColumn]]);
 
 				// get values in another row value
 				else if ( m.list )
@@ -703,9 +705,10 @@ nettools.DbConfigEditor = class {
 							// if value empty, list of choices is empty, this is not an error
 							var value = rows[0][that.options.valueColumn];
 							if ( !value )
-								resolve();
+								resolve(null);
 
-							return that.outputListbox(value.split(s), row[that.options.primaryKeyColumn], m.hint || '', m.required, row[that.options.valueColumn]);
+							// resolve Promise with arguments for `outputListbox` function
+							resolve([value.split(s), row[that.options.primaryKeyColumn], m.hint || '', m.required, row[that.options.valueColumn]]);
 						})
 						.catch(reject);
 				}				
@@ -714,7 +717,14 @@ nettools.DbConfigEditor = class {
 		});
 		
 		
-		return Promise.all(pr);
+		// when all Promises are resolved, we have a Promise returned and resolved by an array of values ; each value is an array of arguments for `outputListbox` function
+		return Promise.all(pr).then(function(argsArray){
+			// waiting for all Promises to resolve
+			argsArray.forEach(function(args){
+				if ( args )
+					that.outputListbox.apply(that, args);
+			});
+		});
 	}
     
     
@@ -794,6 +804,7 @@ nettools.DbConfigEditor = class {
 			onSetupGridColumns : function(columns)
 				{
 					columns.forEach(function(c){
+						// handle metadata column and value column type
 						if ( c.id == that.options.metadataColumn )
 						{
 							c.readonly = true;
@@ -804,6 +815,10 @@ nettools.DbConfigEditor = class {
 						{
 							c.type = 'html';
 						}
+						
+						
+						// enforce values for other columns
+						c.required = that.options.requiredColumns.indexOf(c.id) >= 0;
 					});
 				}
 			
