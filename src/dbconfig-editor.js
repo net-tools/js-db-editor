@@ -832,7 +832,8 @@ nettools.DbConfigEditor = class {
 						
 						
 						// enforce values for other columns
-						c.required = that.options.requiredColumns.indexOf(c.id) >= 0;
+						if ( c.id != that.options.primaryKeyColumn )
+							c.required = that.options.requiredColumns.indexOf(c.id) >= 0;
 					});
 				}
 			
