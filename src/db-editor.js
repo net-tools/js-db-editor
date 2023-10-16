@@ -127,7 +127,7 @@ nettools.SQLTableEditor = class {
 					pk.forEach(function(k)
 						{
 							var col = that.node.querySelector(`th[data-column='${k}']`);
-							col.firstChild.textContent += '\u00a0🔑';
+							col.firstChild.textContent += '\u00a0\ud83d\udd11';//'\u00a0🔑';
 						});
 				});
     }
