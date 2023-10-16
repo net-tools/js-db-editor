@@ -1,3 +1,10 @@
+// ==ClosureCompiler==
+// @compilation_level SIMPLE_OPTIMIZATIONS
+// @output_file_name default.js
+// @language_out ECMASCRIPT_2017
+// ==/ClosureCompiler==
+
+
 
 
 /**
