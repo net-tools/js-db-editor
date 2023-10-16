@@ -66,7 +66,7 @@ nettools.DbConfigEditor = class {
 		var that = this;
 		
 		// set underlying grid editor options
-        this.sqlEditorClassOptions.gridEditorClassOptions = {
+		var gridEditorOptions = {
 			
 			// get html content for metadata or value column
 			onCellHtml : function(...args){
@@ -88,6 +88,9 @@ nettools.DbConfigEditor = class {
 			defaultValues : {}
 		};
 		
+		
+		// merge with user-defined options
+		this.sqlEditorClassOptions.gridEditorClassOptions = Object.assign(gridEditorOptions, this.sqlEditorClassOptions.gridEditorClassOptions);		
 		this.sqlEditorClassOptions.gridEditorClassOptions.defaultValues[this.options.metadataColumn] = '{"type":"text", "required":0}';
 	}
     
