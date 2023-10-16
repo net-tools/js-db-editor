@@ -207,6 +207,10 @@ nettools.DbConfigEditor = class {
 						if ( (elements.list.value == '') && (elements.values.value == '') )
 							return Promise.reject({ status:false, message:nettools.DbConfigEditor.i18n.METADATA_SUBMIT_LIST, field:elements.list});
 												
+						// either 'list' or 'values' fields must be defined
+						if ( (elements.list.value != '') && (elements.values.value != '') )
+							return Promise.reject({ status:false, message:nettools.DbConfigEditor.i18n.METADATA_SUBMIT_LIST2, field:elements.list});
+
 						// checking separator is set
 						if ( elements.separator.value == '' )
 							return Promise.reject({ status:false, message:nettools.DbConfigEditor.i18n.METADATA_SUBMIT_SEPARATOR, field:elements.separator});
@@ -681,6 +685,8 @@ nettools.DbConfigEditor = class {
 				if ( !m )
 					reject(new Error(`Unreadable metadata for row with key '${row[that.options.primaryKeyColumn]}'`));
 
+				
+				// by construction, m.type should always be 'list'
 				if ( m.type != 'list' )
 					resolve(null);
 
@@ -689,11 +695,11 @@ nettools.DbConfigEditor = class {
 				var s = m.separator || that.options.defaultSeparator;
 
 				// get values as a list
-				if ( m.values )
-					resolve([m.values.split(s), row[that.options.primaryKeyColumn], m.hint || '', m.required, row[that.options.valueColumn]]);
+				if ( m.values != undefined )
+					resolve([m.values ? m.values.split(s) : [], row[that.options.primaryKeyColumn], m.hint || '', m.required, row[that.options.valueColumn]]);
 
 				// get values in another row value
-				else if ( m.list )
+				else if ( m.list != undefined )
 				{
 					that.sqlEditor.SQLSelect(`SELECT ${that.options.valueColumn} FROM ${that.table} WHERE ${that.options.primaryKeyColumn} = ?`, [m.list])
 						.then(function(rows){
@@ -702,17 +708,18 @@ nettools.DbConfigEditor = class {
 								reject(new Error(nettools.DbConfigEditor.i18n.NO_ROW_WITH_KEY.replace(/%/, m.list)));
 
 						
-							// if value empty, list of choices is empty, this is not an error
 							var value = rows[0][that.options.valueColumn];
-							if ( !value )
-								resolve(null);
-
+						
 							// resolve Promise with arguments for `outputListbox` function
-							resolve([value.split(s), row[that.options.primaryKeyColumn], m.hint || '', m.required, row[that.options.valueColumn]]);
+							// if value empty, list of choices is empty, this is not an error
+							resolve([value ? value.split(s) : [], row[that.options.primaryKeyColumn], m.hint || '', m.required, row[that.options.valueColumn]]);
 						})
 						.catch(reject);
-				}				
+				}
 				
+				// case where no `values` or `list` values
+				else 
+					reject(new Error(`When metadata.type = 'list', either 'values' or 'list' property must be set`));				
 			}));
 		});
 		
@@ -872,7 +879,8 @@ nettools.DbConfigEditor.i18n = {
 	METADATA_VALUES : 'List of values',
 	METADATA_SEPARATOR : 'Values separator char.',
 	
-	METADATA_SUBMIT_LIST : 'If value type = `list`, `Values in row` or `List of values` data must be set',
+	METADATA_SUBMIT_LIST : 'If value type = `list`, `Values in row` OR `List of values` must be set',
+	METADATA_SUBMIT_LIST2 : 'If value type = `list`, EITHER `Values in row` OR `List of values` must be set',
 	METADATA_SUBMIT_SEPARATOR : 'Separator character is required if value type = `list`'
 }
 

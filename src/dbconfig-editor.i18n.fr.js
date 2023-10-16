@@ -22,7 +22,8 @@ nettools.DbConfigEditor.i18n = {
 	METADATA_VALUES : 'Liste de valeurs',
 	METADATA_SEPARATOR : 'Caractère séparateur pour valeurs',
 	
-	METADATA_SUBMIT_LIST : 'Si type valeur = `list`, `Valeurs dans ligne` or `Liste de valeurs` doit être défini',
+	METADATA_SUBMIT_LIST : 'Si type valeur = `list`, `Valeurs dans ligne` OU `Liste de valeurs` doit être défini',
+	METADATA_SUBMIT_LIST2 : 'Si type valeur = `list`, SOIT `Valeurs dans ligne` SOIT `Liste de valeurs` doit être défini',
 	METADATA_SUBMIT_SEPARATOR : 'Caractère séparateur requis si type valeur = `list`'
 }
 
