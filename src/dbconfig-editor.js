@@ -636,7 +636,12 @@ nettools.DbConfigEditor = class {
 		
 		
 		// set event for reload link
-		this.node.querySelector('div.dbConfig > a').onclick = this.refresh.bind(this);
+		var that = this;
+		this.node.querySelector('div.dbConfig > a').onclick = function(){
+			that.refresh().catch(function(e){
+				that.sqlEditor.editor.options.dialog.alert(e.message ? e.message : e);				
+			});
+		}
 		
 		
 		// set target node for editor and header
@@ -793,7 +798,7 @@ nettools.DbConfigEditor = class {
 		this.sqlEditor.SQL(`UPDATE ${this.table} SET ${this.options.valueColumn} = ? WHERE ${this.options.primaryKeyColumn} = ?`, [event.target.value, event.target.name])
 			.then(function(){
 				// reload UI
-				that.refresh();
+				return that.refresh();
 			})
 			.catch(function(e){
 				that.sqlEditor.editor.options.dialog.alert(e.message ? e.message : e);
