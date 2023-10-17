@@ -29,9 +29,10 @@ abstract class DefaultIntf {
 	 *
 	 * @param bool $status
 	 * @param mixed $body Response sent to client-side
+	 * @param bool $compress Set $compress to True to answer with compressed content
 	 * @return mixed Returns response body with status flag and body content
 	 */	
-	abstract function response($status, $body = null);
+	abstract function response($status, $body = null, $compress = false);
 	
 	
 	
@@ -64,9 +65,10 @@ abstract class DefaultIntf {
 	 * @param string $query SQL query
 	 * @param string[] $values Array of values to bind to placeholders in $query
 	 * @param bool $noResponse Set this to TRUE if no response required
+	 * @param bool $compress Must response be compressed ?
 	 * @return mixed Returns response body with status flag and body content
 	 */
-	function query($query, $values, $noResponse)
+	function query($query, $values, $noResponse, $compress)
 	{
 		try
 		{
@@ -77,7 +79,7 @@ abstract class DefaultIntf {
 				$st->execute($values);
 				$rows = $st->fetchAll(\PDO::FETCH_OBJ);
 
-				return $this->response(true, $rows);
+				return $this->response(true, $rows, $compress);
 			}
 			else
 			{
@@ -100,9 +102,10 @@ abstract class DefaultIntf {
 	 * @param string $req Request name
 	 * @param object $body 
 	 * @param bool $noResponse Set this to TRUE if no response required
+	 * @param bool $compress Must response be compressed ?
 	 * @return mixed Returns response body with status flag and body content
 	 */
-	function request($req, $body, $noResponse)
+	function request($req, $body, $noResponse, $compress)
 	{
 		try
 		{
@@ -111,7 +114,7 @@ abstract class DefaultIntf {
 			
 			// if request expects a response
 			if ( !$noResponse )
-				return $this->response(true, $r);
+				return $this->response(true, $r, $compress);
 			else
 				return $this->response(true);
 		}
@@ -124,7 +127,7 @@ abstract class DefaultIntf {
 	
 	
 	/**
-	 * Execute a SQL request with $_REQUEST data, through PDO, and get rows
+	 * Main entry point : execute a SQL request with $_REQUEST data, through PDO, and get rows
 	 *
 	 * @return mixed Returns response body with status flag and body content
 	 */
@@ -134,7 +137,7 @@ abstract class DefaultIntf {
 		{
 			$type = $this->getRequestValue('type');
 
-			return $this->$type($this->getRequestValue('request'), json_decode($this->getRequestValue('body')), $this->getRequestValue('noResponse'));
+			return $this->$type($this->getRequestValue('request'), json_decode($this->getRequestValue('body')), $this->getRequestValue('noResponse'), $this->getRequestValue('compress'));
 		}
 		catch( \Throwable $e )
 		{

@@ -103,7 +103,12 @@ initSqlJs().then(function(SQL){
 				onSetupGridColumns : function(columns)
 					{
 						/*columns[0].readonly = true;*/
-					}
+					},
+				
+				
+				gridEditorOptions : {
+					defaultValues : { name:'unknown name', price:'999.99'}
+				}
 			}
 		);
 	

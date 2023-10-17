@@ -7,6 +7,7 @@
 <script src="../../js-core/src/js-core.js"></script>
 <script src="../../js-grid-editor/src/editor.js"></script>
 <script src="../src/db-editor.js"></script>
+<script src="lz-string.min.js"></script>
 <script src="sample.js"></script>
 <link rel="stylesheet" href="sample.css">
 <link rel="stylesheet" href="../../ui/src/ui.css">
@@ -23,7 +24,8 @@ class MysqlInterface extends nettools.PdoServerInterface
 	
 	constructor(db, user, password)
 	{
-        super();
+		// use compression
+        super(true);
         
 		this.db = db;
 		this.user = user;
@@ -45,15 +47,7 @@ class MysqlInterface extends nettools.PdoServerInterface
 		payload.user = this.user;
 		payload.password = this.password;
 		
-		return new Promise(function(resolve, reject){
-			
-			nettools.jscore.RequestHelper.sendXmlHTTPRequestPromise('pdo-server.php', payload)
-				.then(function(r)
-					{
-						resolve(r.responseBody);
-					})
-				.catch(reject);
-		});
+		return nettools.jscore.RequestHelper.sendXmlHTTPRequestPromise('pdo-server.php', payload);
 	}
 
 }

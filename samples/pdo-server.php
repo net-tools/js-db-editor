@@ -2,9 +2,9 @@
 
 ini_set('display_errors', 'stdout');
 
+include "../../../autoload.php";
 
-include "../src/Pdo/DefaultIntf.php";
-include "../src/Pdo/XmlHttpResponseIntf.php";
+
 
 
 class SampleIntf extends \Nettools\JsDbEditor\Pdo\XmlHttpResponseIntf

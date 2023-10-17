@@ -44,13 +44,13 @@ nettools.DbConfigEditor = class {
 	 * @param HTMLElement node Top container for db config editor GUI
      * @param object options Object litteral with options for DbConfigEditor class 
 	 * @param function editorClass Constructor for editor class (inheriting from nettools.SQLTableEditor) ; use `.bind` to assign parameters not declared in nettools.SQLTableEditor constructor
-	 * @param object editorClassOptions Miscellaneous parameters (passed to `editorClass` constructor as last argument)
+	 * @param object editorOptions Miscellaneous parameters (passed to `editorClass` constructor as last argument)
 	 */
-	constructor(tableName, node, options = {}, editorClass = nettools.jsGridEditor, editorClassOptions = {})
+	constructor(tableName, node, options = {}, editorClass = nettools.jsGridEditor, editorOptions = {})
 	{
 		this.table = tableName;
 		this.sqlEditorClass = editorClass;
-		this.sqlEditorClassOptions = editorClassOptions;
+		this.sqlEditorOptions = editorOptions;
 		this.node = node;
 		this.options = options;
 		this.headerNode = null;
@@ -72,8 +72,7 @@ nettools.DbConfigEditor = class {
 			onCellHtml : function(...args){
 				// call DbConfigEditor.cellHtmlEvent as an event handler of underlying jsGridEditor object (this refers to jsGridEditor) ; first arg = that = DbConfigEditor object
 				return that.cellHtmlEvent.apply(this, [that].concat(args));
-			},
-            
+			},            
             
             // get value for cell with html content
             onGetCellHtmlValue : function(...args){
@@ -90,8 +89,8 @@ nettools.DbConfigEditor = class {
 		
 		
 		// merge with user-defined options
-		this.sqlEditorClassOptions.gridEditorClassOptions = Object.assign(gridEditorOptions, this.sqlEditorClassOptions.gridEditorClassOptions);		
-		this.sqlEditorClassOptions.gridEditorClassOptions.defaultValues[this.options.metadataColumn] = '{"type":"text", "required":0}';
+		this.sqlEditorOptions.gridEditorOptions = Object.assign(gridEditorOptions, this.sqlEditorOptions.gridEditorOptions);		
+		this.sqlEditorOptions.gridEditorOptions.defaultValues[this.options.metadataColumn] = '{"type":"text", "required":0}';
 	}
     
     
@@ -831,7 +830,7 @@ nettools.DbConfigEditor = class {
 						}
 						
 						
-						// enforce values for other columns
+						// enforce 'required' property for other columns than primary key column, depending if column name is in 'requiredColumns' property
 						if ( c.id != that.options.primaryKeyColumn )
 							c.required = that.options.requiredColumns.indexOf(c.id) >= 0;
 					});
@@ -839,7 +838,7 @@ nettools.DbConfigEditor = class {
 			
 		};
 		
-		o = Object.assign(o, this.sqlEditorClassOptions);
+		o = Object.assign(o, this.sqlEditorOptions);
 
 		
 		// create SQLTableEditor with appropriate class and options

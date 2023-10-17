@@ -24,7 +24,7 @@ nettools.SQLTableEditor = class {
 	 *   - noPrimaryKeyEdit : bool ; if set to `true`, primary key columns can't be updated (except when creating a new line)
 	 *   - orderBy : string ; optional SQL statement to order rows
      *   - gridEditorClass : function ; constructor of editor class object to use as underlying editor
-     *   - gridEditorClassOptions : object ; options object litteral for underlying editor class constructor
+     *   - gridEditorOptions : object ; options object litteral for underlying editor class constructor
 	 *
 	 * @param HTMLElement node DOM node to put content into
 	 * @param string tableName
@@ -67,8 +67,8 @@ nettools.SQLTableEditor = class {
         // set default underlying grid editor
         if ( !this.options.gridEditorClass )
             this.options.gridEditorClass = nettools.jsGridEditor;
-        if ( !this.options.gridEditorClassOptions )
-            this.options.gridEditorClassOptions = {};
+        if ( !this.options.gridEditorOptions )
+            this.options.gridEditorOptions = {};
 	}
 		
 	
@@ -108,7 +108,7 @@ nettools.SQLTableEditor = class {
 					onRowDelete : that.onDelete.bind(that),
 					onRowChange : that.onChange.bind(that)
 				};
-                o = Object.assign(o, that.options.gridEditorClassOptions);
+                o = Object.assign(o, that.options.gridEditorOptions);
                 
 				that.editor = new that.options.gridEditorClass(that.node, o);
 			})
@@ -821,6 +821,18 @@ nettools.MysqlPdoTableEditor = class extends nettools.PdoTableEditor {
 
 
 nettools.PdoServerInterface = class {
+		
+	/**
+	 * Constructor of PdoServerInterface
+	 *
+	 * @param bool useCompression Is compression enabled for xmlhttp responses ? Defaults to false
+	 */
+	constructor(useCompression = false)
+	{
+		this.useCompression = useCompression;
+	}
+	
+	
 	
 	/**
 	 * Send a SQL query described in payload object litteral
@@ -836,6 +848,31 @@ nettools.PdoServerInterface = class {
 	
 	
 	/**
+	 * Send a SQL query described in payload object litteral
+	 *
+	 * @param object payload
+	 * @return Promise Returns a promise resolved if query OK ; resolved value depends on request or query statement and noResponse parameter
+	 */
+	sendRequest(payload)
+	{
+		var that = this;
+		
+		
+		// send request and handle response to decode it if compressed
+		return this.send(payload).then(function(r){
+			if ( r.responseBody && r.compressed )
+				if ( typeof LZString == 'object' )
+					return JSON.parse(LZString.decompressFromBase64(r.responseBody));
+				else
+					throw new Error('LZString library not detected');
+			else
+				return r.responseBody;
+		})
+	}
+	
+	
+	
+	/**
 	 * Send a request to server-side to test if a row can be deleted (we may detect foreign key values)
 	 *
 	 * @param string tableName
@@ -845,10 +882,11 @@ nettools.PdoServerInterface = class {
 	 */
 	onAllowDelete(tableName, rowNumber, row)
 	{
-		return this.send({
+		return this.sendRequest({
 			type : 'request',
 			request : 'allowDelete',
 			noResponse : false,
+			compress : false,
 			body : JSON.stringify({
 				tableName : tableName,
 				rowNumber : rowNumber,
@@ -868,10 +906,11 @@ nettools.PdoServerInterface = class {
 	 */
 	execute(query, values = [])
 	{
-		return this.send({
+		return this.sendRequest({
 				type : 'query',
 				request : query,
 				body : JSON.stringify(values),
+				compress : false,
 				noResponse : true
 			});
 	}
@@ -887,10 +926,11 @@ nettools.PdoServerInterface = class {
 	 */
 	select(query, values = [])
 	{
-		return this.send({
+		return this.sendRequest({
 				type : 'query',
 				request : query,
 				body : JSON.stringify(values),
+				compress : this.useCompression,
 				noResponse : false
 			});
 	}

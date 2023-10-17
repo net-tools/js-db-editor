@@ -32,7 +32,7 @@ class XmlHttpResponseIntf extends DefaultIntf {
 	 * @param mixed $body Value(s) to return to client-side
 	 * @return mixed Returns response body with status flag and body content
 	 */	
-	function response($status, $body = null)
+	function response($status, $body = null, $compress = false)
 	{
 		// send xmlhttprequest response headers
 		header("Content-Type: application/json; charset=utf-8");
@@ -43,10 +43,17 @@ class XmlHttpResponseIntf extends DefaultIntf {
 
 
 		$json = json_encode($body);
+		if ( $compress && class_exists(\LZCompressor\LZString::class) )
+		{
+			$json = '"' . \LZCompressor\LZString::compressToBase64($json) . '"';
+			$cpr = 'true';
+		}
+		else 
+			$cpr = 'false';
 
 
 		if ( $status )
-			die("{\"status\":true, \"responseBody\":$json}");
+			die("{\"status\":true, \"responseBody\":$json, \"compressed\":$cpr}");
 		else
 			die("{\"status\":false, \"message\":$json}");
 	}

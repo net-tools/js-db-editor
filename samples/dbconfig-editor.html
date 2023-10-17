@@ -8,8 +8,8 @@
 <script src="../../ui/src/ui.js"></script>
 <script src="../../ui/src/ui.desktop.js"></script>
 <script src="../../js-grid-editor/src/editor.js"></script>
-<script src="../../js-db-editor/src/db-editor.js"></script>
 <script src="../../../tinymce/tinymce/tinymce.min.js"></script>
+<script src="../src/db-editor.js"></script>
 <script src="../src/dbconfig-editor.js"></script>
 <script src="sample.js"></script>
 <link rel="stylesheet" href="sample.css">
@@ -19,7 +19,7 @@
 <link rel="stylesheet" href="../../ui/src/ui.desktop.yellow-theme.css" id="desktopColorStyle">
 <link rel="stylesheet" href="../../js-grid-editor/src/editor.css">
 <link rel="stylesheet" href="../../js-grid-editor/src/theme-neutral.css" id="gridEditorColorStyle">
-<link rel="stylesheet" href="../../js-db-editor/src/db-editor.css">
+<link rel="stylesheet" href="../src/db-editor.css">
 <link rel="stylesheet" href="../src/dbconfig-editor.css">
 
 	
@@ -90,7 +90,7 @@ initSqlJs().then(function(SQL){
                         'config3.bool','namespace.test','{"type":"bool", "required":1, "hint":"Bool value here"}','1',
                         'config4.bool','namespace.test','{"type":"bool", "required":1}','0',
                         'config5.list','namespace.test','{"type":"list", "required":1, "separator":";", "list":"config5-data"}','',
-                        'config5-data','namespace.test','{"type":"text", "required":1 }','value1;value2;value3',
+                        'config5-data','namespace.test','{"type":"text", "required":0}','value1;value2;value3',
                         'config6.values','namespace.test','{"type":"list", "required":1, "separator":",", "values":"val1,val2,val3"}','',
                         'config7.longtext','namespace.test','{"type":"longtext", "required":0}','ab\ncd\nef\ngh',
                         'config8.html','namespace.test','{"type":"html", "required":0}','<b>This is bold</b>',
@@ -109,7 +109,8 @@ initSqlJs().then(function(SQL){
             {
                 metadataColumn : 'metadata',
                 valueColumn : 'value',
-                primaryKeyColumn : 'id'
+                primaryKeyColumn : 'id',
+				requiredColumns : ['namespace']
             },
                 
             // SQLTableEditor class
@@ -117,6 +118,13 @@ initSqlJs().then(function(SQL){
         
             // SQLTableEditor options
             {
+				orderBy : 'id DESC',				
+				
+				// underlying jsGridEditor options
+				gridEditorOptions : {
+					defaultValues : {namespace:'test'}
+				}					
+			
             }
         );
 
