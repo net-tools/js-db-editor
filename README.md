@@ -178,13 +178,13 @@ The `DbConfigEditor` class constructor expects the following parameters :
 - the name of config table to edit
 - the `HTMLElement` node where the editor must be rendered (usually a DIV)
 - an object litteral with options values for class : 
-  + metadataColumn : the name of metadata column (default is 'metadata')
-  + valueColumn : the name of value column (default is 'value')
-  + primaryKeyColumn : the name of primary key column (default is 'key')
-  + defaultSeparator : a character used to separate data in enum values (default to ';')
-  + lineLength : when a line with metadata value type of 'html' or 'longtext' exceeds this length, the output is truncated and (...) displayed
-  + dialogObject : a reference to class constructor `nettools.ui.desktop.dialog` (default)
-  + requiredColumns : an array of column names that are mandatory (other than primary key column, always mandatory, and value columns, which mandatory behavior is enforced by `metadata.required` property)
+  + `metadataColumn` : the name of metadata column (default is 'metadata')
+  + `valueColumn` : the name of value column (default is 'value')
+  + `primaryKeyColumn` : the name of primary key column (default is 'key')
+  + `defaultSeparator` : a character used to separate data in enum values (default to ';')
+  + `lineLength` : when a line with metadata value type of 'html' or 'longtext' exceeds this length, the output is truncated and (...) displayed
+  + `dialogObject` : a reference to class constructor `nettools.ui.desktop.dialog` (default)
+  + `requiredColumns` : an array of column names that are mandatory (other than primary key column, always mandatory, and value columns, which mandatory behavior is enforced by `metadata.required` property)
 - the class constructor inheriting from `nettools.SQLTableEditor` class (either `SqlLiteTableEditor` or `MysqlPdoTableEditor`) ; remember to bind any first constructor argument not declared in `nettools.SQLTableEditor` constructor
 - an object litteral with options for the class constructor passed as previous parameter
 
