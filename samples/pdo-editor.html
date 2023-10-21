@@ -38,7 +38,6 @@ class MysqlInterface extends nettools.PdoServerInterface
 	 * Send a SQL query described in payload object litteral
 	 *
 	 * @param object payload
-	 * @param bool expectResult
 	 * @return Promise Returns a promise resolved if query OK ; if payload.noResponseBody=false, the Promise is resolved with SELECT response
 	 */
 	send(payload)
