@@ -46,13 +46,13 @@ nettools.DbConfigEditor = class {
 	 * @param function editorClass Constructor for editor class (inheriting from nettools.SQLTableEditor) ; use `.bind` to assign parameters not declared in nettools.SQLTableEditor constructor
 	 * @param object editorOptions Miscellaneous parameters (passed to `editorClass` constructor as last argument)
 	 */
-	constructor(tableName, node, options = {}, editorClass = nettools.jsGridEditor, editorOptions = {})
+	constructor(tableName, node, options, editorClass, editorOptions = {})
 	{
 		this.table = tableName;
 		this.sqlEditorClass = editorClass;
 		this.sqlEditorOptions = editorOptions;
 		this.node = node;
-		this.options = options;
+		this.options = options || {};
 		this.headerNode = null;
 		this.sqlEditor = null;
 		this.sqlEditorNode = null;

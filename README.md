@@ -23,7 +23,7 @@ To install net-tools/js-db-editor package, just require it through composer : `r
 
 ## How to use ?
 
-### SqlLiteTableEditor (sqljs-editor.html)
+### SqlLiteTableEditor (sqljs-editor.html sample)
 
 The library provides two table editors, one for a SqlJs database (a db engine hosted on client browser), one for a Mysql PDO database (the db is hosted on a remote server, accessed through PHP script).
 
@@ -94,7 +94,7 @@ Don't remove the `catch` statement ; if you remove it, errors won't be displayed
 
 
 
-### MysqlPdoTableEditor (pdo-editor.html)
+### MysqlPdoTableEditor (pdo-editor.html sample)
 
 For Mysql PDO editor, we use a new class inheriting from class `nettools.PdoServerInterface` which defines entry points for server side dialog with database.
 
@@ -138,7 +138,7 @@ Don't remove the `catch` statement ; if you remove it, errors won't be displayed
 
 
 
-### DatabaseEditor (database-editor.html)
+### DatabaseEditor (database-editor.html sample)
 
 The library also defines a class that creates the GUI required for the user to select among a list of tables, and the selected table can be edited (with either `MysqlPdoTableEditor` or `SqlLiteTableEditor`).
 
@@ -161,6 +161,81 @@ var dbeditor = new nettools.DatabaseEditor(
 ```
 
 There's not `setup` method to call, the GUI is created on-the-fly.
+
+
+
+
+### DbConfigEditor (dbconfig-editor.html sample)
+
+The `DbConfigEditor` class makes it possible to edit config values stored inside a table. The database can be a SqlJs database (edited thanks to `SqlLiteTableEditor` editor) or a server hosted database (through `MysqlPdoTableEditor` editor).
+
+The table can have any required columns, but 3 are mandatory : *id* (as primary key), *metadata* (stores data about expected value type), *value* ; those are default names, custom names can be used.
+
+The *data* column store the config value ; thanks to *metadata* column, we can enforce its type (text, numeric, bool), ensure it's not omitted, and use specific value editors (for HTML values or multiline strings).
+The *metadata* column value is defined for each row (ie each config value) through a GUI metadata editor window.
+
+The `DbConfigEditor` class constructor expects the following parameters :
+- the name of config table to edit
+- the `HTMLElement` node where the editor must be rendered (usually a DIV)
+- an object litteral with options values for class : 
+  + metadataColumn : the name of metadata column (default is 'metadata')
+  + valueColumn : the name of value column (default is 'value')
+  + primaryKeyColumn : the name of primary key column (default is 'key')
+  + defaultSeparator : a character used to separate data in enum values (default to ';')
+  + lineLength : when a line with metadata value type of 'html' or 'longtext' exceeds this length, the output is truncated and (...) displayed
+  + dialogObject : a reference to class constructor `nettools.ui.desktop.dialog` (default)
+  + requiredColumns : an array of column names that are mandatory (other than primary key column, always mandatory, and value columns, which mandatory behavior is enforced by `metadata.required` property)
+- the class constructor inheriting from `nettools.SQLTableEditor` class (either `SqlLiteTableEditor` or `MysqlPdoTableEditor`) ; remember to bind any first constructor argument not declared in `nettools.SQLTableEditor` constructor
+- an object litteral with options for the class constructor passed as previous parameter
+
+
+```javascript
+var grid = new nettools.DbConfigEditor(
+	// table config name
+	'Config',
+
+	// node
+	document.getElementById('table'),
+
+	// options
+	{
+		metadataColumn : 'metadata',
+		valueColumn : 'value',
+		primaryKeyColumn : 'id',
+		requiredColumns : ['namespace']
+	},
+
+	// SQLTableEditor class, db connection is bound to constructor
+
+	nettools.SqlLiteTableEditor.bind(null, db),
+
+	// SQLTableEditor options
+	{
+		orderBy : 'id DESC',				
+
+		// underlying jsGridEditor options
+		gridEditorOptions : {
+			defaultValues : {namespace:'test'}
+		}					
+
+	}
+);
+```
+
+In this sample, the database refered by `db` has a *config* table with *id*, *metadata*, *namespace* and *value* columns.
+
+To display the GUI editor :
+
+```javascript
+grid.setup()
+	.then(function(){ /* here some code to chain with when setup is done */ })
+	.catch(function(e){
+		// error handling during setup
+		alert(e.message ? e.message : e);
+	});	
+```
+
+Please refer to sample to see how `db` connection is created.
 
 
 
