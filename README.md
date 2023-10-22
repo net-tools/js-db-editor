@@ -34,7 +34,7 @@ The constructor expects the following data :
 - the `HTMLElement` node where the editor must be rendered (usually a DIV)
 - the name of table to edit
 - the options, as an object litteral
-  + `onAllowDelete` : a function called upon row deletion ; return a resolved Promise if row can be deleted, or a rejected Promise if row can't be deleted ; by default, all rows can be deleted
+  + `onAllowDelete` : a function called during row deletion ; return a resolved Promise if row can be deleted, or a rejected Promise if row can't be deleted ; by default, all rows can be deleted
   + `onSetupGridColumns` : a function making it possible to update columns setup (a column can be marked as readonly, required, etc. ; see `net-tools/js-grid-editor` for available values)
   + `gridEditorOptions` : a nested object litteral with options for underlying grid editor (row default values can be provided here ; see `net-tools/js-grid-editor` constructor `options` argument for available values)
   + `noPrimaryKeyEdit` : if set to true, the primary key column can't be modified (except when creating a new line)
